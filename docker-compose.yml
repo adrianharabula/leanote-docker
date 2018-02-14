@@ -1,0 +1,20 @@
+version: '2'
+
+services:
+  db:
+    restart: always
+    image: leanote-mongodb
+    build: ./leanote-mongodb
+
+  server:
+    environment:
+      - SITE_URL="http://localhost:9000"
+    depends_on:
+      - db
+    restart: always
+    image: leanote-server
+    build: ./leanote-server
+    ports:
+     - "127.0.0.1:9000:9000"
+    links:
+      - db:db
