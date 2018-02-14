@@ -2,19 +2,24 @@ version: '2'
 
 services:
   db:
+    image: mongo:3.6
     restart: always
-    image: leanote-mongodb
-    build: ./leanote-mongodb
+    volumes:
+      - ./mongodb_backup:/docker-entrypoint-initdb.d/
+      - ./database:/data/db
 
   server:
-    environment:
-      - SITE_URL="http://localhost:9000"
+    image: ubuntu:xenial
+    restart: always
     depends_on:
       - db
-    restart: always
-    image: leanote-server
-    build: ./leanote-server
-    ports:
-     - "127.0.0.1:9000:9000"
     links:
-      - db:db
+      - db
+    working_dir: /usr/local/leanote/bin
+    entrypoint:
+      - sh
+      - run.sh
+    ports:
+     - "9000:9000"
+    volumes:
+      - "./:/usr/local/leanote"
